@@ -32,7 +32,7 @@ namespace CSVStringResourceConverter
 
             var lines = getLinesFromFile(path);
             var result = parseLines(lines, splitter);
-            var saveDir = Path.Combine(Directory.GetCurrentDirectory(), DateTime.Now.ToString("yyMMdd-hhmm"));
+            var saveDir = Path.Combine(Directory.GetCurrentDirectory(), DateTime.Now.ToString("yyMMdd_hhmm"));
             if (!Directory.Exists(saveDir)) Directory.CreateDirectory(saveDir);
             saveIOS(saveDir, result.Item1, result.Item2);
             saveAndroid(saveDir, result.Item1, result.Item2);
@@ -94,7 +94,7 @@ namespace CSVStringResourceConverter
                 result.Add(o);
             }
 
-            return new Tuple<ParserColumnIndex,List<StringResource>>(pi, result);
+            return new Tuple<ParserColumnIndex, List<StringResource>>(pi, result);
         }
 
         static void saveIOS(string dir, ParserColumnIndex indexes, List<StringResource> strings)
@@ -112,21 +112,42 @@ namespace CSVStringResourceConverter
                     if (!sr.ios) continue;
                     var localizedString = sr.values.Find(x => x.Key == value.Item1).Value;
                     // 현재 언어에서 해당 id를 가진 문자열 리소스가 없을 경우 첫 번째 언어의 문자열을 대입
-                    if(string.IsNullOrEmpty(localizedString)) localizedString = sr.values.Find(x => x.Key == indexes.values[0].Item1).Value;
+                    if (string.IsNullOrEmpty(localizedString)) localizedString = sr.values.Find(x => x.Key == indexes.values[0].Item1).Value;
 
                     output.Append(string.Format("\"{0}\" = \"{1}\";\n", sr.id, localizedString));
                 }
                 var result = output.ToString();
                 File.WriteAllText(filePath, result);
             }
-
-
         }
         static void saveAndroid(string dir, ParserColumnIndex indexes, List<StringResource> strings)
         {
             var path = Path.Combine(dir, "Android");
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
+
+            for (int i = 0; i < indexes.values.Count; i++)
+            {
+                var value = indexes.values[i];
+                var country = value.Item2 + ".xml";
+                var filePath = Path.Combine(path, country);
+                var output = new StringBuilder();
+                output.Append("<resources>\n");
+                foreach (var sr in strings)
+                {
+                    if (!sr.android) continue;
+                    var localizedString = sr.values.Find(x => x.Key == value.Item1).Value;
+                    // 현재 언어에서 해당 id를 가진 문자열 리소스가 없을 경우 첫 번째 언어의 문자열을 대입
+                    if (string.IsNullOrEmpty(localizedString)) localizedString = sr.values.Find(x => x.Key == indexes.values[0].Item1).Value;
+
+                    var translatable = string.Empty;
+                    if (i == 0 && !sr.translatable) translatable = " translatable=\"false\"";
+                    if ((i == 0 && !sr.translatable) || sr.translatable) output.Append(string.Format("\t<string name='{0}'{1}>{2}</string>\n", sr.id, translatable, localizedString));
+                }
+                output.Append("</resources>");
+                var result = output.ToString();
+                File.WriteAllText(filePath, result);
+            }
         }
     }
 
