@@ -14,18 +14,13 @@ namespace CSVStringResourceConverter
 
         static void Main(string[] args)
         {
-            stuff(new string[] { "C:/Users/USER/Desktop/strings.tsv" });
-            Console.ReadLine();
-        }
-
-        static void stuff(string[] args)
-        {
             if (args.Length == 0)
             {
                 Console.WriteLine("Program must be running with arguments!");
                 return;
             }
             var path = args[0];
+
             var splitter = (char)0;
             if (path.EndsWith(".csv")) splitter = SPLITTER_CSV;
             else if (path.EndsWith(".tsv")) splitter = SPLITTER_TSV;
@@ -35,37 +30,49 @@ namespace CSVStringResourceConverter
                 return;
             }
 
-            var lines = File.ReadAllLines(path);
+            var lines = getLinesFromFile(path);
+            var result = parseLines(lines, splitter);
+            var saveDir = Path.Combine(Directory.GetCurrentDirectory(), DateTime.Now.ToString("yyMMdd-hhmm"));
+            if (!Directory.Exists(saveDir)) Directory.CreateDirectory(saveDir);
+            saveIOS(saveDir, result.Item1, result.Item2);
+            saveAndroid(saveDir, result.Item1, result.Item2);
+        }
 
+        static string[] getLinesFromFile(string path)
+        {
+            var lines = File.ReadAllLines(path);
+            return lines;
+        }
+
+        static Tuple<ParserColumnIndex, List<StringResource>> parseLines(string[] lines, char splitter)
+        {
             // get indexes
             var indexes = lines[0].Split(splitter);
-            int indexOfScreen, indexOfKey, indexOfTranslatable, indexOfAndroid, indexOfIos;
-            indexOfScreen = indexOfKey = indexOfTranslatable = indexOfAndroid = indexOfIos = -1;
-            var indexOfValues = new List<int>();
+            var pi = new ParserColumnIndex();
             for (int i = 0; i < indexes.Length; i++)
             {
                 var item = indexes[i];
                 switch (item)
                 {
                     case "screen":
-                        indexOfScreen = i;
+                        pi.screen = i;
                         break;
                     case "key":
-                        indexOfKey = i;
+                        pi.key = i;
                         break;
                     case "translatable":
-                        indexOfTranslatable = i;
+                        pi.translatable = i;
                         break;
                     case "uses-in-android":
-                        indexOfAndroid = i;
+                        pi.usesAndroid = i;
                         break;
                     case "uses-in-ios":
-                        indexOfIos = i;
+                        pi.usesIos = i;
                         break;
                     default:
                         if (item.StartsWith("value"))
                         {
-                            indexOfValues.Add(i);
+                            pi.values.Add(new Tuple<int, string>(i, item));
                         }
                         break;
                 }
@@ -76,47 +83,50 @@ namespace CSVStringResourceConverter
             for (int i = 1; i < lines.Length; i++)
             {
                 var item = lines[i].Split(splitter);
-                var o = new StringResource(item[indexOfScreen], item[indexOfKey]);
-                o.translatable = item[indexOfTranslatable].ToUpper() == "TRUE";
-                o.android = item[indexOfAndroid].ToUpper() == "TRUE";
-                o.ios = item[indexOfIos].ToUpper() == "TRUE";
-                foreach (var j in indexOfValues)
+                var o = new StringResource(item[pi.screen], item[pi.key]);
+                o.translatable = item[pi.translatable].ToUpper() == "TRUE";
+                o.android = item[pi.usesAndroid].ToUpper() == "TRUE";
+                o.ios = item[pi.usesIos].ToUpper() == "TRUE";
+                foreach (var j in pi.values)
                 {
-                    o.values.Add(new KeyValuePair<int, string>(j, item[j]));
+                    o.values.Add(new KeyValuePair<int, string>(j.Item1, item[j.Item1]));
                 }
                 result.Add(o);
             }
 
-            // export
-            foreach (var item in result)
+            return new Tuple<ParserColumnIndex,List<StringResource>>(pi, result);
+        }
+
+        static void saveIOS(string dir, ParserColumnIndex indexes, List<StringResource> strings)
+        {
+            var path = Path.Combine(dir, "iOS");
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+            foreach (var value in indexes.values)
             {
-                Console.WriteLine(item.ToString());
+                var country = value.Item2 + ".strings";
+                var filePath = Path.Combine(path, country);
+                var output = new StringBuilder();
+                foreach (var sr in strings)
+                {
+                    if (!sr.ios) continue;
+                    var localizedString = sr.values.Find(x => x.Key == value.Item1).Value;
+                    // 현재 언어에서 해당 id를 가진 문자열 리소스가 없을 경우 첫 번째 언어의 문자열을 대입
+                    if(string.IsNullOrEmpty(localizedString)) localizedString = sr.values.Find(x => x.Key == indexes.values[0].Item1).Value;
+
+                    output.Append(string.Format("\"{0}\" = \"{1}\";\n", sr.id, localizedString));
+                }
+                var result = output.ToString();
+                File.WriteAllText(filePath, result);
             }
-           
+
+
         }
-    }
-
-    class StringResource
-    {
-        public StringResource(string screen, string key)
+        static void saveAndroid(string dir, ParserColumnIndex indexes, List<StringResource> strings)
         {
-            this.screen = screen;
-            this.key = key;
-        }
+            var path = Path.Combine(dir, "Android");
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
-        private string screen = null;
-        private string key = null;
-
-        public bool translatable { get; set; } = false;
-        public bool android { get; set; } = false;
-        public bool ios { get; set; } = false;
-        public List<KeyValuePair<int, string>> values { get; set; } = new List<KeyValuePair<int, string>>();
-
-        public string id { get { return screen + "_" + key; } }
-
-        public override string ToString()
-        {
-            return "key = " + id + "\tvalue1 : " + values[0] + "\tvalue2 : " + values[1];
         }
     }
 
