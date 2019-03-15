@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CSVStringResourceConverter
@@ -136,13 +137,28 @@ namespace CSVStringResourceConverter
                 foreach (var sr in strings)
                 {
                     if (!sr.android) continue;
+                    var id = sr.id;
+                    if (id == null) continue;
+
                     var localizedString = sr.values.Find(x => x.Key == value.Item1).Value;
                     // 현재 언어에서 해당 id를 가진 문자열 리소스가 없을 경우 첫 번째 언어의 문자열을 대입
                     if (string.IsNullOrEmpty(localizedString)) localizedString = sr.values.Find(x => x.Key == indexes.values[0].Item1).Value;
 
+                    #region escape
+                    for (int f = 0; ; f++)
+                    {
+                        var format = "{" + f + "}";
+                        if (localizedString.Contains(format))
+                            localizedString = localizedString.Replace(format, $"%{f + 1}$s");
+                        else break;
+                    }
+
+                    localizedString = localizedString.Replace("&", "&amp;");
+                    #endregion
+
                     var translatable = string.Empty;
                     if (i == 0 && !sr.translatable) translatable = " translatable=\"false\"";
-                    if ((i == 0 && !sr.translatable) || sr.translatable) output.Append(string.Format("\t<string name='{0}'{1}>{2}</string>\n", sr.id, translatable, localizedString));
+                    if ((i == 0 && !sr.translatable) || sr.translatable) output.Append(string.Format("\t<string name='{0}'{1}>{2}</string>\n", id, translatable, localizedString));
                 }
                 output.Append("</resources>");
                 var result = output.ToString();

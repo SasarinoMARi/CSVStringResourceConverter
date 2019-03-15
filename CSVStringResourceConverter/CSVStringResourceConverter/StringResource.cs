@@ -10,8 +10,8 @@ namespace CSVStringResourceConverter
     {
         public StringResource(string screen, string key)
         {
-            this.screen = screen;
-            this.key = key;
+            this.screen = screen.Trim();
+            this.key = key.Trim();
         }
 
         private string screen = null;
@@ -22,7 +22,7 @@ namespace CSVStringResourceConverter
         public bool ios { get; set; } = false;
         public List<KeyValuePair<int, string>> values { get; set; } = new List<KeyValuePair<int, string>>();
 
-        public string id { get { return screen + "_" + key; } }
+        public string id { get { return (!string.IsNullOrEmpty(screen) && !string.IsNullOrEmpty(key)) ? screen + "_" + key : null; } }
 
         public override string ToString()
         {
