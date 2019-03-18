@@ -33,7 +33,7 @@ namespace CSVStringResourceConverter
 
             var lines = getLinesFromFile(path);
             var result = parseLines(lines, splitter);
-            var saveDir = Path.Combine(Directory.GetCurrentDirectory(), DateTime.Now.ToString("yyMMdd_hhmm"));
+            var saveDir = Path.Combine(Directory.GetCurrentDirectory(), DateTime.Now.ToString("yyMMdd_HHmm"));
             if (!Directory.Exists(saveDir)) Directory.CreateDirectory(saveDir);
             saveIOS(saveDir, result.Item1, result.Item2);
             saveAndroid(saveDir, result.Item1, result.Item2);
