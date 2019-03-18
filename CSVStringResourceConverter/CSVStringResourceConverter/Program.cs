@@ -114,8 +114,19 @@ namespace CSVStringResourceConverter
                     var localizedString = sr.values.Find(x => x.Key == value.Item1).Value;
                     // 현재 언어에서 해당 id를 가진 문자열 리소스가 없을 경우 첫 번째 언어의 문자열을 대입
                     if (string.IsNullOrEmpty(localizedString)) localizedString = sr.values.Find(x => x.Key == indexes.values[0].Item1).Value;
+                    
+                    #region escape
+                    for (int f = 0; ; f++)
+                    {
+                        var format = "{" + f + "}";
+                        if (localizedString.Contains(format))
+                            localizedString = localizedString.Replace(format, $"%{f + 1}$@");
+                        else break;
+                    }
+                    #endregion
 
                     output.Append(string.Format("\"{0}\" = \"{1}\";\n", sr.id, localizedString));
+
                 }
                 var result = output.ToString();
                 File.WriteAllText(filePath, result);
@@ -125,8 +136,7 @@ namespace CSVStringResourceConverter
         {
             var path = Path.Combine(dir, "Android");
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-
-
+            
             for (int i = 0; i < indexes.values.Count; i++)
             {
                 var value = indexes.values[i];
