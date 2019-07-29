@@ -11,8 +11,7 @@ namespace CSVStringResourceConverter
         public int screen = -1;
         public int key = -1;
         public int translatable = -1;
-        public int usesAndroid = -1;
-        public int usesIos = -1;
-        public List<Tuple<int, string>> values { get; private set; } = new List<Tuple<int,string>>();
+        public List<Tuple<int, string>> values { get; private set; } = new List<Tuple<int, string>>();
+        public List<Tuple<int, string>> uses_in { get; private set; } = new List<Tuple<int, string>>();
     }
 }

@@ -18,11 +18,10 @@ namespace CSVStringResourceConverter
         private string key = null;
 
         public bool translatable { get; set; } = false;
-        public bool android { get; set; } = false;
-        public bool ios { get; set; } = false;
+        public List<KeyValuePair<int, bool>> uses_in { get; set; } = new List<KeyValuePair<int, bool>>();
         public List<KeyValuePair<int, string>> values { get; set; } = new List<KeyValuePair<int, string>>();
 
-        public string id { get { return (!string.IsNullOrEmpty(screen) && !string.IsNullOrEmpty(key)) ? screen + "_" + key : null; } }
+        public string id { get { return (!string.IsNullOrEmpty(screen) && !string.IsNullOrEmpty(key)) ? screen + "/" + key : null; } }
 
         public override string ToString()
         {
