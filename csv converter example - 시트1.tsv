@@ -1,0 +1,6 @@
+screen	key	uses-in-app1	uses-in-app2	translatable	value	value-korean	value-japan	value-blabla
+Screen1	Title	TRUE	TRUE	TRUE	First screen title	첫 화면 제목	最初画面タイトル	...
+Screen1	Content	TRUE	TRUE	TRUE	Content description			
+Screen1	ButtonText	TRUE	TRUE	FALSE	OK			
+Screen2	Title	FALSE	TRUE	TRUE	Second screen title	두번째 화면 제목		
+Screen2	ButtonText	FALSE	TRUE		@Screen1/ButtonText			
