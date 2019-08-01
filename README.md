@@ -1,4 +1,4 @@
-# CSVStringResourceConverter
+# CSV2MobileResource
 
 Convert .csv or .tsv file to string resource files for Android and iOS applications.
 
