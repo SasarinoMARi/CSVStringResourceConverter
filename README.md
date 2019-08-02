@@ -20,8 +20,9 @@ I'm using google spreadsheet to manage string resources.
 but you can use anythings as long as the result is .csv or .tsv.
 
 #### Examples
-- [Google spreadsheet](https://docs.google.com/spreadsheets/d/1z0b0o6j4zkVgq9PvMDPeHzoQfUg8EmupAZfqQ61u6-8/edit?usp=sharing)
-- [Exported tsv](https://raw.githubusercontent.com/SasarinoMARi/CSV2MobileResource/files/CSV%20Converter%20Example.tsv)
+- [Google Spreadsheet](https://docs.google.com/spreadsheets/d/1z0b0o6j4zkVgq9PvMDPeHzoQfUg8EmupAZfqQ61u6-8/edit?usp=sharing)
+- [Input Example](https://github.com/SasarinoMARi/CSV2MobileResource/blob/master/Examples/Input/Example.tsv)
+- [Output Example](https://github.com/SasarinoMARi/CSV2MobileResource/tree/master/Examples/Output/190802_1142/example.tsv)
 
 sheet need specific columns...
 
