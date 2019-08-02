@@ -1,0 +1,5 @@
+<resources>
+	<string name='Screen1_Title'>첫 화면 제목</string>
+	<string name='Screen1_Content'>Content description</string>
+	<string name='Screen2_Title'>두번째 화면 제목</string>
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+	<string name='Screen1_Title'>First screen title</string>
+	<string name='Screen1_Content'>Content description</string>
+	<string name='Screen1_ButtonText' translatable="false">OK</string>
+	<string name='Screen2_Title'>Second screen title</string>
+	<string name='Screen2_ButtonText' translatable="false">OK</string>
+</resources>

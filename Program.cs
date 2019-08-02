@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace CSVStringResourceConverter
+namespace CSV2MobileResource
 {
     class Program
     {
@@ -17,7 +17,6 @@ namespace CSVStringResourceConverter
 
         static void Main(string[] args)
         {
-            //args = new string[] { "D:/Documents/GitHub/CSVStringResourceConverter/CSVStringResourceConverter/CSVStringResourceConverter/bin/Debug/QSRemit String Resources - Data (11).tsv" };
             if (args.Length == 0)
             {
                 Console.WriteLine("Program must be running with arguments!");
