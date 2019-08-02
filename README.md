@@ -13,7 +13,7 @@ drag-and-drop exported file into CSV2MobileResource.exe
 
 then program will make new folder in current directory with output files.
 
-## Hot to write resources
+## How to write resources
 
 I'm using google spreadsheet to manage string resources. 
 
